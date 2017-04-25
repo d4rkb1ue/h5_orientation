@@ -20,7 +20,7 @@
                 beta = event.beta,
                 gamma = event.gamma;
             if (alpha || beta || gamma) {
-                display.innerHTML = "alpha:" + alpha + ", beta:" + beta + ", gamma:" + gamma;
+                display.innerHTML = "alpha:" + Math.floor(alpha) + ", beta:" + Math.floor(beta) + ", gamma:" + Math.floor(gamma);
             } else {
                 display.innerHTML = "Not Support DeviceOrientation";
             }
