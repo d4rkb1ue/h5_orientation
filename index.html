@@ -1,31 +1,72 @@
 <!doctype HTML>
 <html>
-
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+    #outer-circle {
+        width: 300px;
+        height: 300px;
+        border-radius: 150px;
+        background-color: black;
+    }
+    
+    #inner-circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 15px;
+        background-color: white;
+    }
+</style>
 </head>
-
 <body>
     <h1 id="angle"></h1>
+    <h1 id="datas"></h1>
+    <div id="outer-circle"></div>
     <script>
-        var display = document.getElementById('angle');
-        //add deviceorientation event listener
-        if (window.DeviceOrientationEvent) {
+        var display_angle = document.getElementById('angle');
+        var display_data = document.getElementById('datas');
+
+        // if (window.DeviceOrientationEvent) {
             window.addEventListener('deviceorientation', DeviceOrientationHandler, false);
-        } else {
-            alert("Not Support DeviceOrientation");
-        }
+        // } else {
+            // display_angle.innerHTML = "Err 001: Not Support DeviceOrientation";
+        // }
+
         function DeviceOrientationHandler(event) {
-            var alpha = event.alpha,
-                beta = event.beta,
+            var beta = event.beta,
                 gamma = event.gamma;
-            if (alpha || beta || gamma) {
-                display.innerHTML = "alpha:" + Math.floor(alpha) + ", beta:" + Math.floor(beta) + ", gamma:" + Math.floor(gamma);
+            if (beta !== null || gamma !== null) {
+                display_angle.innerHTML = "angle:" + polar_angle(beta, gamma);
+                display_data.innerHTML = "beta:" + beta + ", gamma:" + gamma;
             } else {
-                display.innerHTML = "Not Support DeviceOrientation";
+                display_angle.innerHTML = "Err 002: Can't get DeviceOrientation data";
             }
+        }
+        function polar_angle(beta, gamma) {
+            const HORIZONTAL = 361;
+            const ERROR = 999;
+            
+            // horizontal, 0, 90, 180, 270 
+            if (gamma === 0 || beta >= 90 || beta <= -90) {
+                if (beta === 0) {return HORIZONTAL; }
+                else {return beta > 0? 270 : 90; };
+            } else if (beta === 0 || gamma >= 90 || gamma <= -90) {
+                return gamma > 0? 0 : 180;
+            }
+
+            // (0, 90), (90, 180), (180, 270), (270, 360)
+            else if (beta < 0 && gamma > 0) { // (0, 90)
+                return Math.atan(-beta / gamma) / Math.PI * 180;
+            } else if (beta < 0 && gamma < 0) { // (90, 180)
+                return 180 - Math.atan(beta / gamma) / Math.PI * 180;
+            } else if (beta > 0 && gamma < 0) { // (180, 270)
+                return 180 + Math.atan(-beta / gamma) / Math.PI * 180;        
+            } else if (beta > 0 && gamma > 0) { // (270, 360)
+                return 360 - Math.atan(beta / gamma) / Math.PI * 180;
+            }
+
+            return ERROR;
         }
     </script>
 </body>
-
 </html>
